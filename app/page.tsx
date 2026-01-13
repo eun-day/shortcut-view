@@ -138,10 +138,10 @@ export default function Home() {
           )}
           
           {/* Bottom Ad Banner */}
-          <AdBanner 
+          {/* <AdBanner 
             dataAdSlot="1234567890" // Placeholder
             className="w-full max-w-[728px] h-[90px]"
-          />
+          /> */}
 
            {/* Footer */}
           <footer className="mt-8 pt-8 border-t border-[#d1d5dc] text-center pb-8 w-full flex flex-col items-center gap-4">
@@ -161,13 +161,13 @@ export default function Home() {
         </main>
 
         {/* Right: Sidebar Ad */}
-        <aside className="hidden xl:block w-[300px] shrink-0 sticky top-8 h-fit ml-8">
+        {/* <aside className="hidden xl:block w-[300px] shrink-0 sticky top-8 h-fit ml-8">
            <AdBanner 
              dataAdSlot="0987654321" // Placeholder
              dataAdFormat="vertical"
              className="w-[300px] h-[600px]"
            />
-        </aside>
+        </aside> */}
 
       </div>
     </div>
