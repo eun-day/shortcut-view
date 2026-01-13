@@ -54,6 +54,13 @@ export default function PrivacyPolicy() {
               By using our website, you hereby consent to our Privacy Policy and agree to its Terms and Conditions.
             </p>
           </section>
+
+          <section>
+            <h2 className="text-lg font-semibold text-[#111827] mb-2">Contact Us</h2>
+            <p>
+              If you have any questions or suggestions about our Privacy Policy, do not hesitate to contact us at <a href="mailto:deveunsub@gmail.com" className="text-blue-600 hover:underline">deveunsub@gmail.com</a>.
+            </p>
+          </section>
         </div>
 
         <div className="mt-12 pt-8 border-t border-gray-100 text-center flex flex-col items-center gap-4">
