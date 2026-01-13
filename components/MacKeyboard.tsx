@@ -60,9 +60,9 @@ export default function MacKeyboard({ activeKeys = [] }: MacKeyboardProps) {
           <Key unit={1.0} label="I" id="i" active={isActive("i")} />
           <Key unit={1.0} label="O" id="o" active={isActive("o")} />
           <Key unit={1.0} label="P" id="p" active={isActive("p")} />
-          <Key unit={1.0} topLabel="{" bottomLabel="[" id="[" active={isActive("[") || isActive("{")} />
-          <Key unit={1.0} topLabel="}" bottomLabel="]" id="]" active={isActive("]") || isActive("}")} />
-          <Key unit={1.0} topLabel="|" bottomLabel="\" id="\" active={isActive("\\") || isActive("|")} />
+          <Key unit={1.0} topLabel="{{" bottomLabel="[" id="[" active={isActive("[") || isActive("{")} />
+          <Key unit={1.0} topLabel="}}" bottomLabel="]" id="]" active={isActive("]") || isActive("}")} />
+          <Key unit={1.0} topLabel="|" bottomLabel="\\" id="\\" active={isActive("\\") || isActive("|")} />
         </div>
 
         {/* Row 4: ASDF */}
@@ -95,7 +95,7 @@ export default function MacKeyboard({ activeKeys = [] }: MacKeyboardProps) {
           <Key unit={1.0} topLabel="<" bottomLabel="," id="," active={isActive(",") || isActive("<")} />
           <Key unit={1.0} topLabel=">" bottomLabel="." id="." active={isActive(".") || isActive(">")} />
           <Key unit={1.0} topLabel="?" bottomLabel="/" id="/" active={isActive("/") || isActive("?")} />
-          <Key unit={2.25} label="shift" id="shift" active={isActive("shift")} align="right" fontSize="text-[11px] md:text-[13px]" />
+          <Key unit={2.25} label="shift" id="shift-right" active={isActive("shift-right")} align="right" fontSize="text-[11px] md:text-[13px]" />
         </div>
 
         {/* Row 6: Modifiers & Space */}
@@ -117,8 +117,8 @@ export default function MacKeyboard({ activeKeys = [] }: MacKeyboardProps) {
              <div className={`h-10 md:h-12 w-full border border-b-2 rounded-md md:rounded-lg transition-colors shadow-sm ${isActive('space') ? 'bg-blue-500 border-blue-600' : 'bg-white border-gray-300 hover:bg-gray-50'}`} />
           </div>
 
-          <Key unit={1.25} topLabel="⌘" bottomLabel="command" subLabel id="command" active={isActive("command")} />
-          <Key unit={1.0} topLabel="⌥" bottomLabel="option" subLabel id="option" active={isActive("option")} />
+          <Key unit={1.25} topLabel="⌘" bottomLabel="command" subLabel id="command-right" active={isActive("command-right")} />
+          <Key unit={1.0} topLabel="⌥" bottomLabel="option" subLabel id="option-right" active={isActive("option-right")} />
 
           <Key unit={1.0} label="◀" id="left" active={isActive("left")} />
           
