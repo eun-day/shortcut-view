@@ -149,10 +149,10 @@ export default function Home() {
               Mac and MacBook are trademarks of Apple Inc. This website is an independent project and is not affiliated with, endorsed by, or sponsored by Apple Inc.
             </p>
             <div className="flex gap-6 text-sm text-[#6a7282]">
-              <Link href="/about" className="hover:text-[#111827] hover:underline transition-colors">
+              <Link href="/about" className="hover:text-[#111827] underline transition-colors">
                 About
               </Link>
-              <Link href="/privacy" className="hover:text-[#111827] hover:underline transition-colors">
+              <Link href="/privacy" className="hover:text-[#111827] underline transition-colors">
                 Privacy Policy
               </Link>
             </div>

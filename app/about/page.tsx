@@ -57,10 +57,10 @@ export default function About() {
           </a>
           
           <div className="flex gap-6 text-sm text-[#6a7282] mt-4">
-            <a href="/about" className="hover:text-[#111827] hover:underline transition-colors font-semibold">
+            <a href="/about" className="hover:text-[#111827] underline transition-colors font-semibold">
               About
             </a>
-            <a href="/privacy" className="hover:text-[#111827] hover:underline transition-colors">
+            <a href="/privacy" className="hover:text-[#111827] underline transition-colors">
               Privacy Policy
             </a>
           </div>

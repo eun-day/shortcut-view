@@ -56,10 +56,19 @@ export default function PrivacyPolicy() {
           </section>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-100 text-center">
+        <div className="mt-12 pt-8 border-t border-gray-100 text-center flex flex-col items-center gap-4">
           <a href="/" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">
             &larr; Back to Visualizer
           </a>
+          
+          <div className="flex gap-6 text-sm text-[#6a7282] mt-4">
+            <a href="/about" className="hover:text-[#111827] underline transition-colors">
+              About
+            </a>
+            <a href="/privacy" className="hover:text-[#111827] underline transition-colors font-semibold">
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </main>
     </div>
