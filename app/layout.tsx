@@ -88,6 +88,7 @@ export default function RootLayout({
           strategy="beforeInteractive"
           crossOrigin="anonymous"
         />
+        <meta name="google-site-verification" content="18W5-dwj_9oo48U7vs0wIAc53tXuCOaewUxC-rIost0" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
