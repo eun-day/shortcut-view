@@ -84,10 +84,9 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script
-          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3766691232792823"
+          strategy="beforeInteractive"
           crossOrigin="anonymous"
-          strategy="afterInteractive"
         />
       </head>
       <body
