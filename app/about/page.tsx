@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function About() {
   return (
     <div className="min-h-screen bg-[#f9fafb] text-[#101828] font-sans flex flex-col items-center p-8 md:p-16">
@@ -22,6 +24,22 @@ export default function About() {
             </p>
           </section>
 
+          {/* Usage Image Section */}
+          <section className="py-4 flex flex-col items-center gap-4 border-y border-gray-50">
+            <div className="w-full overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+              <Image 
+                src="/shortcut-usage.jpeg" 
+                alt="Shortcut-View usage guide" 
+                width={800}
+                height={450}
+                className="w-full h-auto"
+              />
+            </div>
+            <p className="text-sm font-medium text-[#6b7280]">
+              Click on a shortcut to see its exact location on the keyboard and detailed instructions.
+            </p>
+          </section>
+
           <section>
             <h2 className="text-xl font-semibold text-[#111827] mb-3">Features</h2>
             <ul className="list-disc pl-5 space-y-1">
@@ -33,10 +51,19 @@ export default function About() {
           </section>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-gray-100 text-center">
+        <div className="mt-12 pt-8 border-t border-gray-100 text-center flex flex-col items-center gap-4">
           <a href="/" className="text-blue-600 hover:text-blue-800 font-medium transition-colors">
             &larr; Back to Visualizer
           </a>
+          
+          <div className="flex gap-6 text-sm text-[#6a7282] mt-4">
+            <a href="/about" className="hover:text-[#111827] hover:underline transition-colors font-semibold">
+              About
+            </a>
+            <a href="/privacy" className="hover:text-[#111827] hover:underline transition-colors">
+              Privacy Policy
+            </a>
+          </div>
         </div>
       </main>
     </div>
