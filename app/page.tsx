@@ -1,65 +1,175 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useMemo } from "react";
+import Link from "next/link";
+import MacKeyboard from "@/components/MacKeyboard";
+import ShortcutDetail from "@/components/ShortcutDetail";
+import AdBanner from "@/components/AdBanner";
+import AlphabetIndex from "@/components/AlphabetIndex";
+import SlidingPanel from "@/components/SlidingPanel";
+import ShortcutSearch from "@/components/ShortcutSearch";
+import { systemShortcuts } from "@/data/shortcuts";
 
 export default function Home() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedShortcutId, setSelectedShortcutId] = useState<string | null>(null);
+  const [activeAlphabet, setActiveAlphabet] = useState<string | null>(null);
+
+  // Alphabet list A-Z
+  const alphabets = useMemo(() => 
+    Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))
+  , []);
+
+  // Filter shortcuts based on active alphabet (ID based)
+  const shortcutsByAlphabet = useMemo(() => {
+    if (!activeAlphabet) return [];
+    const char = activeAlphabet.toLowerCase();
+    return systemShortcuts.filter(s => s.id.toLowerCase().startsWith(char));
+  }, [activeAlphabet]);
+
+  // Search Logic with Priority
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase();
+    
+    const filtered = systemShortcuts.filter(shortcut => 
+      shortcut.id.toLowerCase().includes(query) ||
+      shortcut.description.toLowerCase().includes(query) ||
+      shortcut.keys.some(k => k.toLowerCase().includes(query))
+    );
+
+    // Sort priority: ID Starts With > ID Contains > Others
+    return filtered.sort((a, b) => {
+      const aIdStart = a.id.toLowerCase().startsWith(query);
+      const bIdStart = b.id.toLowerCase().startsWith(query);
+      if (aIdStart && !bIdStart) return -1;
+      if (!aIdStart && bIdStart) return 1;
+
+      const aIdInclude = a.id.toLowerCase().includes(query);
+      const bIdInclude = b.id.toLowerCase().includes(query);
+      if (aIdInclude && !bIdInclude) return -1;
+      if (!aIdInclude && bIdInclude) return 1;
+
+      return 0;
+    });
+  }, [searchQuery]);
+
+  // Get selected shortcut object
+  const selectedShortcut = useMemo(() => 
+    systemShortcuts.find(s => s.id === selectedShortcutId) || null
+  , [selectedShortcutId]);
+
+  const handleAlphabetSelect = (char: string) => {
+    if (activeAlphabet === char) {
+      setActiveAlphabet(null);
+    } else {
+      setActiveAlphabet(char);
+      setSearchQuery(""); 
+    }
+  };
+
+  const handleSelectShortcut = (id: string) => {
+    setSelectedShortcutId(id);
+    setActiveAlphabet(null);
+    setSearchQuery(""); 
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div 
+      className="min-h-screen w-full bg-[#f9fafb] text-[#101828] font-sans flex justify-center p-4 md:p-8 overflow-x-hidden"
+      style={{
+        backgroundImage: "linear-gradient(140.564deg, rgb(249, 250, 251) 0%, rgb(243, 244, 246) 100%)"
+      }}
+    >
+      <div className="w-full max-w-[1440px] flex gap-0 relative">
+        
+        {/* Left: Alphabet Index */}
+        <AlphabetIndex 
+          alphabets={alphabets} 
+          activeAlphabet={activeAlphabet} 
+          onSelect={handleAlphabetSelect} 
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+
+        {/* Sliding List Panel */}
+        <SlidingPanel
+          isOpen={!!activeAlphabet}
+          title={`Shortcuts: ${activeAlphabet}`}
+          shortcuts={shortcutsByAlphabet}
+          selectedShortcutId={selectedShortcutId}
+          onClose={() => setActiveAlphabet(null)}
+          onSelectShortcut={handleSelectShortcut}
+        />
+
+        {/* Main Content */}
+        <main className="flex-1 flex flex-col items-center gap-8 max-w-[864px] mx-auto min-w-0">
+          
+          {/* Header */}
+          <header className="text-center flex flex-col gap-2 mt-4">
+            <h1 className="text-2xl md:text-[28px] font-bold text-[#101828] tracking-tight">
+              Shortcut Visualizer for Mac
+            </h1>
+            <p className="text-sm text-[#4a5565]">
+              Find and visualize keyboard shortcuts instantly
+            </p>
+          </header>
+
+          {/* Search Bar */}
+          <ShortcutSearch 
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            searchResults={searchResults}
+            onSelectShortcut={handleSelectShortcut}
+          />
+
+          {/* Keyboard Visualization */}
+          <div className="w-full flex justify-center">
+            <MacKeyboard activeKeys={selectedShortcut?.keys} />
+          </div>
+
+          {/* Shortcut Detail Area */}
+          {selectedShortcut && (
+            <div className="w-full">
+              <ShortcutDetail 
+                shortcut={selectedShortcut} 
+                allShortcuts={systemShortcuts}
+                onSelectRelated={handleSelectShortcut}
+              />
+            </div>
+          )}
+          
+          {/* Bottom Ad Banner */}
+          <AdBanner 
+            dataAdSlot="1234567890" // Placeholder
+            className="w-full max-w-[728px] h-[90px]"
+          />
+
+           {/* Footer */}
+          <footer className="mt-8 pt-8 border-t border-[#d1d5dc] text-center pb-8 w-full flex flex-col items-center gap-4">
+            <p className="text-[14px] text-[#6a7282] max-w-2xl mx-auto">
+              Mac and MacBook are trademarks of Apple Inc. This website is an independent project and is not affiliated with, endorsed by, or sponsored by Apple Inc.
+            </p>
+            <div className="flex gap-6 text-sm text-[#6a7282]">
+              <Link href="/about" className="hover:text-[#111827] hover:underline transition-colors">
+                About
+              </Link>
+              <Link href="/privacy" className="hover:text-[#111827] hover:underline transition-colors">
+                Privacy Policy
+              </Link>
+            </div>
+          </footer>
+
+        </main>
+
+        {/* Right: Sidebar Ad */}
+        <aside className="hidden xl:block w-[300px] shrink-0 sticky top-8 h-fit ml-8">
+           <AdBanner 
+             dataAdSlot="0987654321" // Placeholder
+             dataAdFormat="vertical"
+             className="w-[300px] h-[600px]"
+           />
+        </aside>
+
+      </div>
     </div>
   );
 }
