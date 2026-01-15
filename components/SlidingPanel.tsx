@@ -20,7 +20,7 @@ export default function SlidingPanel({
   return (
     <div 
       className={`
-        hidden xl:block fixed left-[calc(max(2rem,50%)-720px+48px)] top-8 bottom-8 w-[320px] 
+        hidden xl:block absolute left-[48px] top-0 bottom-0 w-[320px] 
         bg-white border border-gray-200 rounded-2xl shadow-2xl z-[60] overflow-hidden transition-all duration-300 ease-in-out
         ${isOpen ? "translate-x-4 opacity-100" : "-translate-x-full opacity-0 pointer-events-none"}
       `}

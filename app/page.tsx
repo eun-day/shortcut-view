@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import MacKeyboard from "@/components/MacKeyboard";
 import ShortcutDetail from "@/components/ShortcutDetail";
@@ -8,37 +8,45 @@ import AdBanner from "@/components/AdBanner";
 import AlphabetIndex from "@/components/AlphabetIndex";
 import SlidingPanel from "@/components/SlidingPanel";
 import ShortcutSearch from "@/components/ShortcutSearch";
-import { systemShortcuts } from "@/data/shortcuts";
+import CategoryDropdown from "@/components/CategoryDropdown";
+import CategorySidebar from "@/components/CategorySidebar";
+import { masterShortcuts, getShortcutsByCategory, categories } from "@/data/shortcuts";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedShortcutId, setSelectedShortcutId] = useState<string | null>(null);
+  const [selectedShortcutId, setSelectedShortcutId] = useState<string | null>("spotlight");
   const [activeAlphabet, setActiveAlphabet] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>("Essential");
 
   // Alphabet list A-Z
   const alphabets = useMemo(() => 
     Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i))
   , []);
 
+  // Determine base list of shortcuts based on active category
+  const currentShortcuts = useMemo(() => {
+    return activeCategory ? getShortcutsByCategory(activeCategory) : masterShortcuts;
+  }, [activeCategory]);
+
   // Filter shortcuts based on active alphabet (ID based)
   const shortcutsByAlphabet = useMemo(() => {
     if (!activeAlphabet) return [];
     const char = activeAlphabet.toLowerCase();
-    return systemShortcuts.filter(s => s.id.toLowerCase().startsWith(char));
+    return masterShortcuts.filter(s => s.id.toLowerCase().startsWith(char));
   }, [activeAlphabet]);
 
-  // Search Logic with Priority
+  // Search Logic
   const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    const query = searchQuery.toLowerCase();
+    const baseList = currentShortcuts;
+    if (!searchQuery.trim()) return baseList;
     
-    const filtered = systemShortcuts.filter(shortcut => 
+    const query = searchQuery.toLowerCase();
+    const filtered = baseList.filter(shortcut => 
       shortcut.id.toLowerCase().includes(query) ||
       shortcut.description.toLowerCase().includes(query) ||
       shortcut.keys.some(k => k.toLowerCase().includes(query))
     );
 
-    // Sort priority: ID Starts With > ID Contains > Others
     return filtered.sort((a, b) => {
       const aIdStart = a.id.toLowerCase().startsWith(query);
       const bIdStart = b.id.toLowerCase().startsWith(query);
@@ -52,12 +60,16 @@ export default function Home() {
 
       return 0;
     });
-  }, [searchQuery]);
+  }, [searchQuery, currentShortcuts]);
 
   // Get selected shortcut object
   const selectedShortcut = useMemo(() => 
-    systemShortcuts.find(s => s.id === selectedShortcutId) || null
+    masterShortcuts.find(s => s.id === selectedShortcutId) || null
   , [selectedShortcutId]);
+
+  const activeCategoryLabel = useMemo(() => 
+    categories.find(c => c.id === activeCategory)?.label || ""
+  , [activeCategory]);
 
   const handleAlphabetSelect = (char: string) => {
     if (activeAlphabet === char) {
@@ -65,110 +77,154 @@ export default function Home() {
     } else {
       setActiveAlphabet(char);
       setSearchQuery(""); 
+      setActiveCategory(null); 
     }
+  };
+
+  const handleCategorySelect = (category: string | null) => {
+    setActiveCategory(category);
+    setSearchQuery(""); 
+    setActiveAlphabet(null); 
   };
 
   const handleSelectShortcut = (id: string) => {
     setSelectedShortcutId(id);
-    setActiveAlphabet(null);
+    if (activeAlphabet) {
+        setActiveAlphabet(null); 
+    }
     setSearchQuery(""); 
+  };
+
+  const handleCloseCategory = () => {
+    setActiveCategory(null);
   };
 
   return (
     <div 
-      className="min-h-screen w-full bg-[#f9fafb] text-[#101828] font-sans flex justify-center p-4 md:p-8 overflow-x-hidden"
+      className="min-h-screen w-full bg-[#f9fafb] text-[#101828] font-sans flex flex-col overflow-x-hidden"
       style={{
         backgroundImage: "linear-gradient(140.564deg, rgb(249, 250, 251) 0%, rgb(243, 244, 246) 100%)"
       }}
     >
-      <div className="w-full max-w-[1440px] flex gap-0 relative">
-        
-        {/* Left: Alphabet Index */}
-        <AlphabetIndex 
-          alphabets={alphabets} 
-          activeAlphabet={activeAlphabet} 
-          onSelect={handleAlphabetSelect} 
-        />
+      {/* Top Utility Header */}
+      <header className="w-full h-[56px] flex justify-center z-[70] bg-[#f9fafb] px-4 md:px-8">
+        <div className="w-full max-w-[1440px] flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            {/* Category Dropdown */}
+            <CategoryDropdown 
+              selectedCategory={activeCategory} 
+              onSelectCategory={handleCategorySelect} 
+            />
+          </div>
+          <div className="flex items-center gap-6 text-sm font-medium text-[#6a7282]">
+             <Link href="/about" className="underline hover:text-[#111827] transition-colors">About</Link>
+             <Link href="/privacy" className="underline hover:text-[#111827] transition-colors">Privacy Policy</Link>
+          </div>
+        </div>
+      </header>
 
-        {/* Sliding List Panel */}
-        <SlidingPanel
-          isOpen={!!activeAlphabet}
-          title={`Shortcuts: ${activeAlphabet}`}
-          shortcuts={shortcutsByAlphabet}
-          selectedShortcutId={selectedShortcutId}
-          onClose={() => setActiveAlphabet(null)}
-          onSelectShortcut={handleSelectShortcut}
-        />
-
-        {/* Main Content */}
-        <main className="flex-1 flex flex-col items-center gap-8 max-w-[864px] mx-auto min-w-0">
+      <div className="flex-1 w-full flex justify-center p-4 md:p-8 pt-0">
+        <div className="w-full max-w-[1440px] flex gap-0 relative">
           
-          {/* Header */}
-          <header className="text-center flex flex-col gap-2 mt-4">
-            <h1 className="text-2xl md:text-[28px] font-bold text-[#101828] tracking-tight">
-              Shortcut Visualizer for Mac
-            </h1>
-            <p className="text-sm text-[#4a5565]">
-              Find and visualize keyboard shortcuts instantly
-            </p>
-          </header>
+          {/* LEFT SIDEBAR AREA */}
+          <div className="relative flex shrink-0">
+            {/* Mode 1: Alphabet Index (Always in the same container context) */}
+            {!activeCategory && (
+              <>
+                <AlphabetIndex 
+                  alphabets={alphabets} 
+                  activeAlphabet={activeAlphabet} 
+                  onSelect={handleAlphabetSelect} 
+                />
+                <SlidingPanel
+                  isOpen={!!activeAlphabet}
+                  title={`Shortcuts: ${activeAlphabet}`}
+                  shortcuts={shortcutsByAlphabet}
+                  selectedShortcutId={selectedShortcutId}
+                  onClose={() => setActiveAlphabet(null)}
+                  onSelectShortcut={handleSelectShortcut}
+                />
+              </>
+            )}
 
-          {/* Search Bar */}
-          <ShortcutSearch 
-            searchQuery={searchQuery}
-            setSearchQuery={setSearchQuery}
-            searchResults={searchResults}
-            onSelectShortcut={handleSelectShortcut}
-          />
-
-          {/* Keyboard Visualization */}
-          <div className="w-full flex justify-center">
-            <MacKeyboard activeKeys={selectedShortcut?.keys} />
+            {/* Mode 2: Category Sidebar (Replaces Index) */}
+            {activeCategory && (
+              <CategorySidebar 
+                categoryTitle={activeCategoryLabel}
+                shortcuts={currentShortcuts}
+                selectedShortcutId={selectedShortcutId}
+                onSelectShortcut={handleSelectShortcut}
+                onClose={handleCloseCategory}
+              />
+            )}
           </div>
 
-          {/* Shortcut Detail Area */}
-          {selectedShortcut && (
-            <div className="w-full">
-              <ShortcutDetail 
-                shortcut={selectedShortcut} 
-                allShortcuts={systemShortcuts}
-                onSelectRelated={handleSelectShortcut}
-              />
+          {/* Main Content */}
+          <main className="flex-1 flex flex-col items-center gap-8 max-w-[864px] mx-auto min-w-0">
+            
+            {/* Title Section */}
+            <div className="text-center flex flex-col gap-2 mt-4">
+              <h1 className="text-2xl md:text-[28px] font-bold text-[#101828] tracking-tight">
+                Shortcut Visualizer for Mac
+              </h1>
+              <p className="text-sm text-[#4a5565]">
+                Find and visualize keyboard shortcuts instantly
+              </p>
             </div>
-          )}
-          
-          {/* Bottom Ad Banner */}
-          {/* <AdBanner 
-            dataAdSlot="1234567890" // Placeholder
-            className="w-full max-w-[728px] h-[90px]"
-          /> */}
 
-           {/* Footer */}
-          <footer className="mt-8 pt-8 border-t border-[#d1d5dc] text-center pb-8 w-full flex flex-col items-center gap-4">
-            <p className="text-[14px] text-[#6a7282] max-w-2xl mx-auto">
-              Mac and MacBook are trademarks of Apple Inc. This website is an independent project and is not affiliated with, endorsed by, or sponsored by Apple Inc.
-            </p>
-            <div className="flex gap-6 text-sm text-[#6a7282]">
-              <Link href="/about" className="hover:text-[#111827] underline transition-colors">
-                About
-              </Link>
-              <Link href="/privacy" className="hover:text-[#111827] underline transition-colors">
-                Privacy Policy
-              </Link>
+            {/* Search Bar */}
+            <ShortcutSearch 
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              searchResults={searchResults}
+              onSelectShortcut={handleSelectShortcut}
+            />
+
+            {/* Keyboard Visualization */}
+            <div className="w-full flex justify-center">
+              <MacKeyboard activeKeys={selectedShortcut?.keys} />
             </div>
-          </footer>
 
-        </main>
+            {/* Shortcut Detail Area */}
+            {selectedShortcut && (
+              <div className="w-full">
+                <ShortcutDetail 
+                  shortcut={selectedShortcut} 
+                  allShortcuts={masterShortcuts}
+                  onSelectRelated={handleSelectShortcut}
+                />
+              </div>
+            )}
+            
+            {/* Bottom Ad Banner */}
+            {/* <AdBanner 
+              dataAdSlot="1234567890" 
+              className="w-full max-w-[728px] h-[90px]"
+            /> */}
 
-        {/* Right: Sidebar Ad */}
-        {/* <aside className="hidden xl:block w-[300px] shrink-0 sticky top-8 h-fit ml-8">
-           <AdBanner 
-             dataAdSlot="0987654321" // Placeholder
-             dataAdFormat="vertical"
-             className="w-[300px] h-[600px]"
-           />
-        </aside> */}
+             {/* Footer */}
+            <footer className="mt-8 pt-8 border-t border-[#d1d5dc] text-center pb-8 w-full flex flex-col items-center gap-4">
+              <p className="text-[14px] text-[#6a7282] max-w-2xl mx-auto">
+                Mac and MacBook are trademarks of Apple Inc. This website is an independent project and is not affiliated with, endorsed by, or sponsored by Apple Inc.
+              </p>
+              <div className="flex gap-6 text-sm text-[#6a7282]">
+                <Link href="/about" className="underline hover:text-[#111827] transition-colors">About</Link>
+                <Link href="/privacy" className="underline hover:text-[#111827] transition-colors">Privacy Policy</Link>
+              </div>
+            </footer>
 
+          </main>
+
+          {/* Right: Sidebar Ad */}
+          {/* <aside className="hidden xl:block w-[300px] shrink-0 sticky top-0 h-fit ml-8">
+             <AdBanner 
+               dataAdSlot="0987654321" 
+               dataAdFormat="vertical"
+               className="w-[300px] h-[600px]"
+             />
+          </aside> */}
+
+        </div>
       </div>
     </div>
   );

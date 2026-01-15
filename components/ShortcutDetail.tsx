@@ -58,20 +58,25 @@ export default function ShortcutDetail({ shortcut, allShortcuts, onSelectRelated
           <h2 className="text-[24px] font-semibold text-[#0a0a0a] leading-tight mb-2 capitalize cursor-pointer hover:text-blue-600 transition-colors">
             {shortcut.id}
           </h2>
-          <p className="text-[16px] text-[#4a5565] leading-normal">
+          <p className="text-[16px] text-[#4a5565] leading-normal mb-4">
             {shortcut.description}
           </p>
+          
+          {shortcut.tip && (
+            <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-3 animate-in fade-in duration-500">
+              <span className="text-[18px] shrink-0">💡</span>
+              <p className="text-[14px] text-amber-800 leading-relaxed italic">
+                <span className="font-bold not-italic mr-1 text-amber-900">Pro Tip:</span> 
+                {shortcut.tip}
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-4 mt-2">
           <div className="flex items-center gap-2">
             <span className="text-[14px] text-[#6a7282] w-20 shrink-0">Shortcut:</span>
             {renderKeys(shortcut.label)}
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-[14px] text-[#6a7282] w-20 shrink-0">Category:</span>
-            <span className="text-[14px] font-medium text-[#364153]">{shortcut.category}</span>
           </div>
         </div>
       </div>

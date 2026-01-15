@@ -61,7 +61,6 @@ export default function ShortcutSearch({
                 <div>
                   <div className="font-semibold text-sm text-gray-900 capitalize mb-0.5 flex items-center gap-2">
                     {shortcut.id}
-                    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full uppercase">{shortcut.category}</span>
                   </div>
                   <div className="text-xs text-gray-500 line-clamp-1">{shortcut.description}</div>
                 </div>
