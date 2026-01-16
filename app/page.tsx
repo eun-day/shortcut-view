@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect } from "react";
+import { useState, useMemo, useRef, useEffect, Suspense } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import MacKeyboard from "@/components/MacKeyboard";
 import ShortcutDetail from "@/components/ShortcutDetail";
 import AdBanner from "@/components/AdBanner";
@@ -10,13 +11,26 @@ import SlidingPanel from "@/components/SlidingPanel";
 import ShortcutSearch from "@/components/ShortcutSearch";
 import CategoryDropdown from "@/components/CategoryDropdown";
 import CategorySidebar from "@/components/CategorySidebar";
+import SEOContent from "@/components/SEOContent";
 import { masterShortcuts, getShortcutsByCategory, categories } from "@/data/shortcuts";
 
-export default function Home() {
+function HomeContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedShortcutId, setSelectedShortcutId] = useState<string | null>("spotlight");
   const [activeAlphabet, setActiveAlphabet] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<string | null>("Essential");
+  
+  // Initialize category from URL or default to "Essential"
+  const initialCategory = searchParams.get("category");
+  const [activeCategory, setActiveCategory] = useState<string | null>(initialCategory || "Essential");
+
+  // Sync state when URL params change (e.g. back button)
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    setActiveCategory(categoryParam || "Essential");
+  }, [searchParams]);
 
   // Alphabet list A-Z
   const alphabets = useMemo(() => 
@@ -77,14 +91,23 @@ export default function Home() {
     } else {
       setActiveAlphabet(char);
       setSearchQuery(""); 
-      setActiveCategory(null); 
+      setActiveCategory(null);
+      // Remove category param when using alphabet index (master list mode)
+      router.push("/", { scroll: false });
     }
   };
 
   const handleCategorySelect = (category: string | null) => {
     setActiveCategory(category);
     setSearchQuery(""); 
-    setActiveAlphabet(null); 
+    setActiveAlphabet(null);
+    
+    // Update URL
+    if (category) {
+      router.push(`/?category=${category}`, { scroll: false });
+    } else {
+      router.push("/", { scroll: false });
+    }
   };
 
   const handleSelectShortcut = (id: string) => {
@@ -97,6 +120,7 @@ export default function Home() {
 
   const handleCloseCategory = () => {
     setActiveCategory(null);
+    router.push("/", { scroll: false });
   };
 
   return (
@@ -128,7 +152,7 @@ export default function Home() {
           
           {/* LEFT SIDEBAR AREA */}
           <div className="relative flex shrink-0">
-            {/* Mode 1: Alphabet Index (Always in the same container context) */}
+            {/* Mode 1: Alphabet Index */}
             {!activeCategory && (
               <>
                 <AlphabetIndex 
@@ -147,7 +171,7 @@ export default function Home() {
               </>
             )}
 
-            {/* Mode 2: Category Sidebar (Replaces Index) */}
+            {/* Mode 2: Category Sidebar */}
             {activeCategory && (
               <CategorySidebar 
                 categoryTitle={activeCategoryLabel}
@@ -180,8 +204,8 @@ export default function Home() {
               onSelectShortcut={handleSelectShortcut}
             />
 
-            {/* Keyboard Visualization */}
-            <div className="w-full flex justify-center">
+            {/* Keyboard Visualization (Scroll Target) */}
+            <div id="visualization-area" className="w-full flex justify-center scroll-mt-[30px]">
               <MacKeyboard activeKeys={selectedShortcut?.keys} />
             </div>
 
@@ -196,11 +220,8 @@ export default function Home() {
               </div>
             )}
             
-            {/* Bottom Ad Banner */}
-            {/* <AdBanner 
-              dataAdSlot="1234567890" 
-              className="w-full max-w-[728px] h-[90px]"
-            /> */}
+            {/* SEO & Guide Content */}
+            <SEOContent onSelectShortcut={handleSelectShortcut} />
 
              {/* Footer */}
             <footer className="mt-8 pt-8 border-t border-[#d1d5dc] text-center pb-8 w-full flex flex-col items-center gap-4">
@@ -216,16 +237,24 @@ export default function Home() {
           </main>
 
           {/* Right: Sidebar Ad */}
-          {/* <aside className="hidden xl:block w-[300px] shrink-0 sticky top-0 h-fit ml-8">
-             <AdBanner 
+          <aside className="hidden xl:block w-[300px] shrink-0 sticky top-0 h-fit ml-8">
+             {/* <AdBanner 
                dataAdSlot="0987654321" 
                dataAdFormat="vertical"
                className="w-[300px] h-[600px]"
-             />
-          </aside> */}
+             /> */}
+          </aside>
 
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }
