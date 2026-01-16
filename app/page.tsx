@@ -49,30 +49,36 @@ function HomeContent() {
     return masterShortcuts.filter(s => s.id.toLowerCase().startsWith(char));
   }, [activeAlphabet]);
 
-  // Search Logic
+  // Search Logic with Weighted Priority (Global Search)
   const searchResults = useMemo(() => {
-    const baseList = currentShortcuts;
-    if (!searchQuery.trim()) return baseList;
+    const baseList = masterShortcuts; // Always search all shortcuts
+    if (!searchQuery.trim()) return []; // Return empty if no search to avoid showing all
     
     const query = searchQuery.toLowerCase();
+    
+    // Filter first (ID, Description, Tip only)
     const filtered = baseList.filter(shortcut => 
       shortcut.id.toLowerCase().includes(query) ||
       shortcut.description.toLowerCase().includes(query) ||
-      shortcut.keys.some(k => k.toLowerCase().includes(query))
+      (shortcut.tip && shortcut.tip.toLowerCase().includes(query))
     );
 
+    // Sort by relevance score
     return filtered.sort((a, b) => {
-      const aIdStart = a.id.toLowerCase().startsWith(query);
-      const bIdStart = b.id.toLowerCase().startsWith(query);
-      if (aIdStart && !bIdStart) return -1;
-      if (!aIdStart && bIdStart) return 1;
+      const getScore = (s: typeof a) => {
+        const id = s.id.toLowerCase();
+        const desc = s.description.toLowerCase();
+        const tip = s.tip?.toLowerCase() || "";
 
-      const aIdInclude = a.id.toLowerCase().includes(query);
-      const bIdInclude = b.id.toLowerCase().includes(query);
-      if (aIdInclude && !bIdInclude) return -1;
-      if (!aIdInclude && bIdInclude) return 1;
+        if (id === query) return 100; // Exact ID match
+        if (id.startsWith(query)) return 80; // ID starts with
+        if (id.includes(query)) return 60; // ID contains
+        if (desc.includes(query)) return 40; // Description contains
+        if (tip.includes(query)) return 20; // Tip contains
+        return 0;
+      };
 
-      return 0;
+      return getScore(b) - getScore(a); // Descending sort
     });
   }, [searchQuery, currentShortcuts]);
 
