@@ -100,6 +100,14 @@ export default function MainContent() {
         setActiveAlphabet(null); 
     }
     setSearchQuery(""); 
+
+    // Scroll to visualization area
+    setTimeout(() => {
+      const element = document.getElementById('visualization-area');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const handleCloseCategory = () => {
