@@ -20,6 +20,7 @@ export default function ShortcutSearch({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -33,15 +34,11 @@ export default function ShortcutSearch({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Reset selection when search results change
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [searchResults]);
-
   const handleSelect = (id: string) => {
     onSelectShortcut(id);
     setIsFocused(false);
     setSelectedIndex(-1);
+    inputRef.current?.blur();
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -100,10 +97,15 @@ export default function ShortcutSearch({
           </svg>
         </div>
         <input 
+          ref={inputRef}
           type="text" 
           value={searchQuery}
           onFocus={() => setIsFocused(true)}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            setIsFocused(true);
+            setSelectedIndex(-1);
+          }}
           onKeyDown={handleKeyDown}
           placeholder="Search shortcuts..." 
           className="w-full h-[64px] pl-[48px] pr-4 rounded-[14px] border-2 border-[#d1d5dc] bg-white text-[18px] focus:outline-none focus:border-blue-500 shadow-sm"
@@ -139,7 +141,7 @@ export default function ShortcutSearch({
              ))
            ) : (
               <div className="p-4 text-center text-gray-500 text-sm">
-                No shortcuts found for "{searchQuery}"
+                No shortcuts found for &quot;{searchQuery}&quot;
               </div>
            )}
         </div>
