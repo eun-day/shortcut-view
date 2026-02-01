@@ -202,11 +202,16 @@ export default function MainContent() {
 
             {/* Shortcut Detail Area */}
             {selectedShortcut && (
-              <div className="w-full">
+              <div className="w-full space-y-8">
                 <ShortcutDetail 
                   shortcut={selectedShortcut} 
                   allShortcuts={masterShortcuts}
                   onSelectRelated={handleSelectShortcut}
+                />
+                <AdBanner 
+                  dataAdSlot="1671292702" 
+                  dataAdFormat="horizontal"
+                  className="w-full h-[100px] md:h-[120px]"
                 />
               </div>
             )}
@@ -229,11 +234,11 @@ export default function MainContent() {
 
           {/* Right: Sidebar Ad */}
           <aside className="hidden xl:block w-[300px] shrink-0 sticky top-0 h-fit ml-8">
-             {/* <AdBanner 
-               dataAdSlot="0987654321" 
+             <AdBanner 
+               dataAdSlot="5427044197" 
                dataAdFormat="vertical"
                className="w-[300px] h-[600px]"
-             /> */}
+             />
           </aside>
 
         </div>
