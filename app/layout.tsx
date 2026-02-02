@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
   // 2. Browser tab title settings
   title: {
-    default: "Best Mac Shortcuts Visualized | All Essential macOS Keys Guide",
+    default: "Best Mac Shortcuts Visualized | Ultimate Cheat Sheet | Shortcut-View",
     template: "%s | Shortcut-View",
   },
 
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 
   // 6. Social Media (OpenGraph)
   openGraph: {
-    title: "Best Mac Shortcuts Visualized | All Essential macOS Keys Guide",
+    title: "Best Mac Shortcuts Visualized | Ultimate Cheat Sheet | Shortcut-View",
     description: "Looking for the most useful Mac shortcuts? Visualize them on an interactive keyboard. The best Mac shortcuts guide for productivity.",
     url: "https://shortcutview.com",
     siteName: "Shortcut-View",
