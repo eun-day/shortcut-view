@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
   // 2. Browser tab title settings
   title: {
-    default: "Shortcut-View | Interactive Mac Keyboard Shortcuts Visualization",
+    default: "Best Mac Shortcuts Visualized | All Essential macOS Keys Guide",
     template: "%s | Shortcut-View",
   },
 
   // 3. Search engine description (Key keywords included)
-  description: "Stop memorizing text lists! Visualize Mac keyboard shortcuts directly on a real keyboard layout. The easiest guide to boost your productivity by 2x for beginners and pros alike.",
+  description: "Looking for the most useful Mac shortcuts? Stop memorizing text lists! Visualize all Mac shortcuts on an interactive keyboard. The best Mac shortcuts guide to boost productivity.",
 
   // 4. Search keywords
   keywords: [
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
 
   // 6. Social Media (OpenGraph)
   openGraph: {
-    title: "Shortcut-View | The Easiest Visual Guide for Mac Shortcuts",
-    description: "Learn essential Mac shortcuts at a glance with interactive keyboard visualization.",
+    title: "Best Mac Shortcuts Visualized | All Essential macOS Keys Guide",
+    description: "Looking for the most useful Mac shortcuts? Visualize them on an interactive keyboard. The best Mac shortcuts guide for productivity.",
     url: "https://shortcutview.com",
     siteName: "Shortcut-View",
     images: [
